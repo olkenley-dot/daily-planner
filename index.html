@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Olkenley 每日计划</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #F59E0B;
+      --orange-light: #FCD34D;
+      --orange-dark: #D97706;
+      --blue: #1E40AF;
+      --blue-light: #3B82F6;
+      --green: #10B981;
+      --green-light: #D1FAE5;
+      --bg: #FDF6EC;
+      --card-bg: #FFFFFF;
+      --text: #1F2937;
+      --text-light: #6B7280;
+      --border: #F3E8D3;
+      --shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --radius: 16px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 80px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== Header ===== */
+    header {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      color: white;
+      padding: 48px 24px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: -10%;
+      right: -10%;
+      height: 60px;
+      background: var(--bg);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+    #greeting {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
+    }
+    #sub-greeting {
+      font-size: 14px;
+      opacity: 0.85;
+      position: relative;
+      z-index: 1;
+    }
+    #date-display {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== Progress Ring ===== */
+    .progress-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px 0;
+      position: relative;
+      z-index: 1;
+      margin-top: -10px;
+    }
+    .ring-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+    .ring-container svg {
+      transform: rotate(-90deg);
+      width: 120px;
+      height: 120px;
+    }
+    .ring-bg {
+      fill: none;
+      stroke: #F3E8D3;
+      stroke-width: 8;
+    }
+    .ring-fg {
+      fill: none;
+      stroke: var(--orange);
+      stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+    .ring-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .ring-text .count {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--orange);
+      display: block;
+      line-height: 1;
+    }
+    .ring-text .label {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+    .ring-complete-dot {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 28px;
+      height: 28px;
+      background: var(--green);
+      border: 3px solid var(--bg);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(16,185,129,0.4);
+    }
+    .ring-complete-dot.show {
+      display: flex;
+      animation: pop 0.4s ease;
+    }
+
+    /* ===== Day Streak ===== */
+    .streak-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 20px;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+    .streak-bar .num {
+      font-weight: 700;
+      color: var(--orange);
+      font-size: 18px;
+    }
+    .streak-bar .fire {
+      font-size: 20px;
+    }
+
+    /* ===== Section Divider ===== */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 20px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-light);
+      letter-spacing: 0.5px;
+    }
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ===== Task Card ===== */
+    .task-list {
+      padding: 0 16px;
+    }
+    .task-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent;
+    }
+    .task-card:active {
+      transform: scale(0.97);
+    }
+    .task-card.active-now {
+      border-color: var(--orange-light);
+      background: #FFFBEB;
+    }
+    .task-card.completed {
+      opacity: 0.75;
+    }
+
+    /* Checkbox */
+    .check-box {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.25s;
+      font-size: 14px;
+      color: transparent;
+    }
+    .task-card.completed .check-box {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+
+    /* Task info */
+    .task-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .task-title {
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.25s;
+    }
+    .task-card.completed .task-title {
+      text-decoration: line-through;
+      color: var(--text-light);
+    }
+    .task-time {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    /* Category badge */
+    .task-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .badge-routine { background: #FEF3C7; color: #92400E; }
+    .badge-fitness { background: #D1FAE5; color: #065F46; }
+    .badge-work    { background: #DBEAFE; color: #1E40AF; }
+    .badge-learning{ background: #EDE9FE; color: #5B21B6; }
+
+    /* Completion celebration animation */
+    @keyframes pop {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+    @keyframes celebrate {
+      0% { transform: scale(0) rotate(0deg); opacity: 0; }
+      50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+      100% { transform: scale(1) rotate(360deg); opacity: 0; }
+    }
+    .celebration-star {
+      position: fixed;
+      pointer-events: none;
+      font-size: 24px;
+      z-index: 999;
+      animation: celebrate 0.6s ease forwards;
+    }
+
+    /* ===== Empty State ===== */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+    }
+    .empty-state .emoji {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-light);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
+      z-index: 100;
+    }
+    footer .time-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    footer .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+    }
+    footer .status-dot.idle {
+      background: var(--orange);
+    }
+    footer .status-dot.sleep {
+      background: #D1D5DB;
+    }
+
+    /* ===== Task Progress Toast ===== */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--text);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 200;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ===== Responsive ===== */
+    @media (min-width: 480px) {
+      .task-list {
+        max-width: 440px;
+        margin: 0 auto;
+      }
+      .section-divider {
+        max-width: 440px;
+        margin: 0 auto;
+      }
+      .progress-section,
+      .streak-bar {
+        max-width: 440px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="greeting">早安 Olkenley</div>
+  <div id="sub-greeting">今天也要加油 💪</div>
+  <div id="date-display"></div>
+</header>
+
+<div class="progress-section">
+  <div class="ring-container">
+    <svg viewBox="0 0 120 120">
+      <circle class="ring-bg" cx="60" cy="60" r="52"/>
+      <circle class="ring-fg" cx="60" cy="60" r="52"
+        stroke-dasharray="326.73"
+        stroke-dashoffset="326.73"
+        id="progress-ring"/>
+    </svg>
+    <div class="ring-text">
+      <span class="count" id="progress-count">0</span>
+      <span class="label">已完成</span>
+    </div>
+  </div>
+</div>
+
+<div class="streak-bar">
+  <span class="fire">🔥</span>
+  连续坚持 <span class="num" id="streak-count">0</span> 天
+</div>
+
+<div id="task-sections"></div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <div class="time-status">
+    <span class="status-dot" id="status-dot"></span>
+    <span id="status-text">工作中</span>
+  </div>
+  <div id="footer-time"></div>
+</footer>
+
+<script>
+// ===== DATA =====
+const TASKS = [
+  { id: 1,  time: "6:00",  title: "起床遛狗（听播客）",    period: "morning",    cat: "routine" },
+  { id: 2,  time: "7:30",  title: "腿部力量训练",          period: "morning",    cat: "fitness" },
+  { id: 3,  time: "9:00",  title: "夏令营课程设计",        period: "morning",    cat: "work" },
+  { id: 4,  time: "14:30", title: "短视频创作",            period: "afternoon",  cat: "work" },
+  { id: 5,  time: "16:00", title: "读书",                  period: "afternoon",  cat: "learning" },
+  { id: 6,  time: "17:00", title: "遛狗放松",              period: "afternoon",  cat: "routine" },
+  { id: 7,  time: "21:30", title: "长时间遛狗（听播客）",  period: "evening",    cat: "routine" },
+  { id: 8,  time: "23:00", title: "准备睡觉",              period: "evening",    cat: "routine" },
+];
+
+const PERIODS = [
+  { key: "morning",   label: "🌅 晨间",   icon: "🌅" },
+  { key: "afternoon", label: "📋 午后",    icon: "📋" },
+  { key: "evening",   label: "🌙 晚间",   icon: "🌙" },
+];
+
+const CAT_LABELS = {
+  routine:  "日常",
+  fitness:  "锻炼",
+  work:     "工作",
+  learning: "学习",
+};
+
+const GREETINGS = [
+  { h: 5,  msg: "清晨好", sub: "新的一天开始了 ☀️" },
+  { h: 6,  msg: "早上好", sub: "该起床遛狗了 🐕" },
+  { h: 9,  msg: "上午好", sub: "开始深度工作 💼" },
+  { h: 12, msg: "中午好", sub: "记得吃午餐 🍚" },
+  { h: 14, msg: "下午好", sub: "下午继续加油 💪" },
+  { h: 18, msg: "傍晚好", sub: "今天过得怎么样？" },
+  { h: 21, msg: "晚上好", sub: "准备放松一下 🌙" },
+  { h: 23, msg: "夜深了", sub: "该准备睡觉了 😴" },
+];
+
+const CIRCUMFERENCE = 2 * Math.PI * 52; // ~326.73
+
+// ===== STATE =====
+let completions = {};  // { "2026-05-26": [1,3,5] }
+
+function getDateStr(d) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function todayStr() { return getDateStr(new Date()); }
+
+function loadCompletions() {
+  try {
+    const raw = localStorage.getItem('olkenley_tasks');
+    completions = raw ? JSON.parse(raw) : {};
+  } catch(e) { completions = {}; }
+}
+function saveCompletions() {
+  localStorage.setItem('olkenley_tasks', JSON.stringify(completions));
+}
+function getTodayCompletions() {
+  return completions[todayStr()] || [];
+}
+function setTodayCompletions(ids) {
+  completions[todayStr()] = ids;
+  saveCompletions();
+}
+
+// ===== STREAK =====
+function calcStreak() {
+  const today = new Date();
+  let count = 0;
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = getDateStr(d);
+    const done = completions[key];
+    if (done && done.length > 0) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  return count;
+}
+
+// ===== RENDER =====
+function render() {
+  const today = new Date();
+  const todayId = todayStr();
+  const doneIds = getTodayCompletions();
+  const total = TASKS.length;
+  const done = doneIds.length;
+  const pct = total > 0 ? done / total : 0;
+
+  // Greeting
+  const h = today.getHours();
+  let greeting = GREETINGS[0];
+  for (const g of GREETINGS) {
+    if (h >= g.h) greeting = g;
+  }
+  document.getElementById('greeting').textContent = `${greeting.msg} Olkenley`;
+  document.getElementById('sub-greeting').textContent = greeting.sub;
+
+  // Date
+  const weekdays = ['日','一','二','三','四','五','六'];
+  document.getElementById('date-display').textContent =
+    `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日 周${weekdays[today.getDay()]}`;
+
+  // Progress ring
+  const ring = document.getElementById('progress-ring');
+  const offset = CIRCUMFERENCE * (1 - pct);
+  ring.style.strokeDashoffset = offset;
+  document.getElementById('progress-count').textContent = done;
+
+  // Completion dot
+  const dot = document.querySelector('.ring-complete-dot');
+  if (done >= total && dot) dot.classList.add('show');
+  else if (dot) dot.classList.remove('show');
+
+  // Streak
+  document.getElementById('streak-count').textContent = calcStreak();
+
+  // Task sections
+  renderTasks(doneIds);
+
+  // Footer
+  renderFooterTime(h);
+}
+
+function renderTasks(doneIds) {
+  const container = document.getElementById('task-sections');
+  container.innerHTML = '';
+
+  // "已完成全部" emoji if all done
+  if (doneIds.length >= TASKS.length) {
+    const div = document.createElement('div');
+    div.className = 'empty-state';
+    div.innerHTML = `
+      <div class="emoji">🎉</div>
+      <div style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:4px;">今天全部完成了！</div>
+      <div style="font-size:14px;">好好犒劳自己一下吧 🏆</div>
+    `;
+    container.appendChild(div);
+  }
+
+  PERIODS.forEach(p => {
+    const tasks = TASKS.filter(t => t.period === p.key);
+    if (tasks.length === 0) return;
+
+    // Only show section if not all completed
+    const allDone = tasks.every(t => doneIds.includes(t.id));
+
+    // Divider
+    const divider = document.createElement('div');
+    divider.className = 'section-divider';
+    divider.textContent = p.label;
+    container.appendChild(divider);
+
+    // Cards
+    const list = document.createElement('div');
+    list.className = 'task-list';
+
+    tasks.forEach(t => {
+      const isDone = doneIds.includes(t.id);
+      const isNow = isCurrentTask(t);
+
+      const card = document.createElement('div');
+      card.className = `task-card${isDone ? ' completed' : ''}${isNow ? ' active-now' : ''}`;
+      card.dataset.id = t.id;
+
+      card.innerHTML = `
+        <div class="check-box">${isDone ? '✓' : ''}</div>
+        <div class="task-info">
+          <div class="task-title">${t.title}</div>
+          <div class="task-time">${t.time}</div>
+        </div>
+        <span class="task-badge badge-${t.cat}">${CAT_LABELS[t.cat]}</span>
+      `;
+
+      card.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleTask(t.id);
+      });
+
+      list.appendChild(card);
+    });
+
+    container.appendChild(list);
+  });
+}
+
+function isCurrentTask(task) {
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+
+  // Parse task time
+  const parts = task.time.split(':');
+  const th = parseInt(parts[0], 10);
+  const tm = parseInt(parts[1] || '0', 10);
+
+  const currentMinutes = h * 60 + m;
+  const taskMinutes = th * 60 + tm;
+  const diff = currentMinutes - taskMinutes;
+
+  // Show as "active" if within 90 min window after task start
+  // and not yet completed
+  return diff >= 0 && diff <= 90 && !getTodayCompletions().includes(task.id);
+}
+
+function renderFooterTime(h) {
+  const dot = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+
+  if (h >= 6 && h < 12) {
+    dot.className = 'status-dot';
+    text.textContent = '☀️ 上午工作中';
+  } else if (h >= 12 && h < 14) {
+    dot.className = 'status-dot idle';
+    text.textContent = '🍚 午休时间';
+  } else if (h >= 14 && h < 18) {
+    dot.className = 'status-dot';
+    text.textContent = '📋 下午工作中';
+  } else if (h >= 18 && h < 21) {
+    dot.className = 'status-dot idle';
+    text.textContent = '🌆 自由时间';
+  } else if (h >= 21 || h < 6) {
+    dot.className = 'status-dot sleep';
+    text.textContent = '🌙 休息时间';
+  }
+
+  document.getElementById('footer-time').textContent =
+    `${String(h).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`;
+}
+
+// ===== TOGGLE TASK =====
+function toggleTask(id) {
+  let doneIds = getTodayCompletions();
+  const idx = doneIds.indexOf(id);
+
+  if (idx > -1) {
+    doneIds.splice(idx, 1);
+  } else {
+    doneIds.push(id);
+    spawnCelebration();
+    showToast(getMotivation(doneIds.length + 1, TASKS.length));
+  }
+
+  setTodayCompletions(doneIds);
+  render();
+}
+
+function spawnCelebration() {
+  const emojis = ['✨', '⭐', '🎯', '💪', '👏', '🌟'];
+  for (let i = 0; i < 3; i++) {
+    const el = document.createElement('div');
+    el.className = 'celebration-star';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = (20 + Math.random() * 60) + '%';
+    el.style.top = (20 + Math.random() * 50) + '%';
+    el.style.animationDelay = (i * 0.1) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 900);
+  }
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function getMotivation(done, total) {
+  const msgs = [
+    '好的开始是成功的一半 🚀',
+    '又完成一项，继续保持 👏',
+    '进度不错，加油 💪',
+    '你已经完成一半了！🎯',
+    '太棒了，超过一半了！🌟',
+    '马上全部完成了！🔥',
+    '差一点就圆满了！✨',
+  ];
+  const ratio = done / total;
+  if (done === 1) return msgs[0];
+  if (ratio <= 0.3) return msgs[1];
+  if (ratio <= 0.5) return msgs[2];
+  if (ratio === 0.5) return msgs[3];
+  if (ratio <= 0.75) return msgs[4];
+  if (ratio < 1) return msgs[5];
+  return '🎉 全部完成！今天太棒了！';
+}
+
+// ===== INIT =====
+function init() {
+  loadCompletions();
+  render();
+
+  // Clean up old data (keep only last 90 days)
+  const keys = Object.keys(completions);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 90);
+  const cutoffStr = getDateStr(cutoff);
+  let changed = false;
+  for (const key of keys) {
+    if (key < cutoffStr) {
+      delete completions[key];
+      changed = true;
+    }
+  }
+  if (changed) saveCompletions();
+
+  // Auto-refresh every minute
+  setInterval(() => {
+    render();
+  }, 60000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
