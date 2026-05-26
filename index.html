@@ -242,6 +242,19 @@
     }
     .calendar-toggle:active { color: var(--text-light); }
 
+    /* Calendar solar/lunar day */
+    .solar-day { font-size: 15px; font-weight: 600; line-height: 1.4; }
+    .lunar-day {
+      font-size: 8px;
+      font-weight: 400;
+      color: var(--text-muted);
+      line-height: 1.2;
+      letter-spacing: 0.02em;
+    }
+    .calendar-cell.today .lunar-day { color: var(--orange-dark); }
+    .calendar-cell.selected .lunar-day { color: rgba(255,255,255,0.7); }
+    .calendar-cell.other-month .lunar-day { display: none; }
+
     /* ===== Progress Ring ===== */
     .progress-section {
       display: flex;
