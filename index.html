@@ -14,21 +14,22 @@
       --orange: #F59E0B;
       --orange-light: #FCD34D;
       --orange-dark: #D97706;
-      --blue: #1E40AF;
-      --blue-light: #3B82F6;
+      --pink: #EC4899;
+      --purple: #8B5CF6;
+      --blue: #2563EB;
+      --blue-light: #60A5FA;
       --green: #10B981;
       --green-light: #D1FAE5;
       --red: #EF4444;
-      --purple: #8B5CF6;
-      --bg: #FDF6EC;
+      --bg: #F5F0EC;
       --card-bg: #FFFFFF;
       --text: #1F2937;
       --text-light: #6B7280;
       --text-muted: #9CA3AF;
-      --border: #F3E8D3;
-      --shadow: 0 2px 12px rgba(0,0,0,0.06);
-      --radius: 16px;
-      --radius-sm: 10px;
+      --border: #E8DDD0;
+      --shadow: 0 4px 20px rgba(245,158,11,0.08);
+      --radius: 18px;
+      --radius-sm: 12px;
     }
 
     body {
@@ -42,12 +43,26 @@
 
     /* ===== Header ===== */
     header {
-      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      background: linear-gradient(135deg, #F59E0B, #EC4899, #8B5CF6);
       color: white;
-      padding: 48px 24px 20px;
+      padding: 48px 24px 28px;
       text-align: center;
       position: relative;
       overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.12) 0%, transparent 60%);
+      animation: headerShimmer 8s ease-in-out infinite alternate;
+    }
+    @keyframes headerShimmer {
+      0% { transform: translate(-5%, -5%); }
+      100% { transform: translate(5%, 5%); }
     }
     header::after {
       content: '';
@@ -125,18 +140,18 @@
     .date-nav .nav-spacer { flex: 1; }
     .date-nav .btn-today {
       font-size: 13px;
-      padding: 6px 14px;
-      border: 1px solid var(--orange);
+      padding: 6px 16px;
+      border: none;
       border-radius: 20px;
-      background: #FFFBEB;
-      color: var(--orange-dark);
-      font-weight: 600;
+      background: linear-gradient(135deg, #F59E0B, #EC4899);
+      color: white;
+      font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
-      transition: background 0.15s;
+      transition: all 0.2s;
       -webkit-tap-highlight-color: transparent;
     }
-    .date-nav .btn-today:active { background: #FEF3C7; }
+    .date-nav .btn-today:active { transform: scale(0.95); opacity: 0.9; }
     .date-nav .btn-edit {
       font-size: 13px;
       padding: 6px 14px;
@@ -209,7 +224,7 @@
       border-radius: 50%;
     }
     .calendar-cell.selected {
-      background: var(--orange) !important;
+      background: linear-gradient(135deg, #F59E0B, #EC4899) !important;
       color: white !important;
       font-weight: 700;
     }
@@ -285,7 +300,7 @@
     }
     .ring-fg {
       fill: none;
-      stroke: var(--orange);
+      stroke: url(#ring-grad);
       stroke-width: 8;
       stroke-linecap: round;
       transition: stroke-dashoffset 0.5s ease;
@@ -300,7 +315,10 @@
     .ring-text .count {
       font-size: 28px;
       font-weight: 800;
-      color: var(--orange);
+      background: linear-gradient(135deg, #F59E0B, #EC4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       display: block;
       line-height: 1;
     }
@@ -321,9 +339,12 @@
       color: var(--text-light);
     }
     .streak-bar .num {
-      font-weight: 700;
-      color: var(--orange);
-      font-size: 18px;
+      font-weight: 800;
+      font-size: 20px;
+      background: linear-gradient(135deg, #F59E0B, #EC4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .streak-bar .fire {
       font-size: 20px;
@@ -343,8 +364,9 @@
     .section-divider::after {
       content: '';
       flex: 1;
-      height: 1px;
-      background: var(--border);
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--orange), var(--pink), var(--purple));
     }
 
     /* ===== Task Card ===== */
@@ -371,8 +393,9 @@
       transform: scale(0.97);
     }
     .task-card.active-now {
-      border-color: var(--orange-light);
-      background: #FFFBEB;
+      border-color: transparent;
+      background: linear-gradient(135deg, #FFF7ED, #FFFBEB);
+      box-shadow: 0 0 0 2px var(--orange-light), 0 4px 16px rgba(245,158,11,0.15);
     }
     .task-card.completed {
       opacity: 0.75;
@@ -436,8 +459,8 @@
       color: transparent;
     }
     .task-card.completed .check-box {
-      background: var(--green);
-      border-color: var(--green);
+      background: linear-gradient(135deg, #10B981, #34D399);
+      border-color: transparent;
       color: white;
     }
 
@@ -469,11 +492,11 @@
       font-weight: 600;
       flex-shrink: 0;
     }
-    .badge-routine { background: #FEF3C7; color: #92400E; }
-    .badge-fitness { background: #D1FAE5; color: #065F46; }
-    .badge-work    { background: #DBEAFE; color: #1E40AF; }
-    .badge-learning{ background: #EDE9FE; color: #5B21B6; }
-    .badge-fun     { background: #FCE7F3; color: #9D174D; }
+    .badge-routine { background: linear-gradient(135deg, #FEF3C7, #FDE68A); color: #92400E; }
+    .badge-fitness { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); color: #065F46; }
+    .badge-work    { background: linear-gradient(135deg, #DBEAFE, #93C5FD); color: #1E40AF; }
+    .badge-learning{ background: linear-gradient(135deg, #EDE9FE, #C4B5FD); color: #5B21B6; }
+    .badge-fun     { background: linear-gradient(135deg, #FCE7F3, #F9A8D4); color: #9D174D; }
 
     /* Custom task highlight tag */
     .custom-tag {
@@ -519,11 +542,11 @@
       justify-content: space-between;
       gap: 8px;
       padding: 10px 16px;
-      background: #EFF6FF;
-      border-top: 1px solid var(--blue-light);
-      border-bottom: 1px solid var(--blue-light);
+      background: linear-gradient(135deg, #FFF7ED, #FEF3C7, #FCE7F3);
+      border-top: 1px solid #FCD34D;
+      border-bottom: 1px solid #FCD34D;
       font-size: 13px;
-      color: var(--blue);
+      color: #92400E;
     }
     .edit-bar.show { display: flex; flex-wrap: wrap; }
     .edit-bar .edit-hint {
@@ -551,11 +574,11 @@
     }
     .edit-bar .btn-reset:active { background: #FEF2F2; }
     .edit-bar .btn-done {
-      background: var(--blue);
-      border-color: var(--blue);
+      background: linear-gradient(135deg, #F59E0B, #EC4899);
+      border-color: transparent;
       color: white;
     }
-    .edit-bar .btn-done:active { background: #1E40AF; }
+    .edit-bar .btn-done:active { opacity: 0.9; transform: scale(0.96); }
 
     /* ===== Add Task Modal ===== */
     .modal-overlay {
@@ -630,11 +653,11 @@
     }
     .modal-actions .btn-cancel:active { background: #F9FAFB; }
     .modal-actions .btn-confirm {
-      background: var(--orange);
-      border-color: var(--orange);
+      background: linear-gradient(135deg, #F59E0B, #EC4899);
+      border-color: transparent;
       color: white;
     }
-    .modal-actions .btn-confirm:active { background: var(--orange-dark); }
+    .modal-actions .btn-confirm:active { opacity: 0.9; }
 
     /* Completion celebration animation */
     @keyframes pop {
@@ -767,6 +790,13 @@
 <div class="progress-section">
   <div class="ring-container">
     <svg viewBox="0 0 120 120">
+      <defs>
+        <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#F59E0B"/>
+          <stop offset="50%" stop-color="#EC4899"/>
+          <stop offset="100%" stop-color="#8B5CF6"/>
+        </linearGradient>
+      </defs>
       <circle class="ring-bg" cx="60" cy="60" r="52"/>
       <circle class="ring-fg" cx="60" cy="60" r="52"
         stroke-dasharray="326.73"
