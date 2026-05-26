@@ -1429,15 +1429,16 @@ function seedMay31Tasks() {
   if (hasCustomPlan(ds)) return; // already seeded
 
   const tasks = [
-    ...BASE_TASKS,
+    // 0:00 是一天的开头，放在最前面
     {
       id: 2000,
       time: "0:00",
       title: "观看欧冠决赛 ⚽",
-      period: "evening",
+      period: "morning",
       cat: "fun",
       isCustom: true,
     },
+    ...BASE_TASKS,
     {
       id: 2001,
       time: "16:00",
