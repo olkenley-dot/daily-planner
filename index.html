@@ -388,7 +388,7 @@
     }
     .calendar-cell .event-dot {
       position: absolute;
-      bottom: 2px;
+      top: 6px;
       left: 50%;
       transform: translateX(-50%);
       width: 5px;
@@ -397,7 +397,7 @@
       background: var(--orange);
       z-index: 1;
     }
-    .calendar-cell.today .event-dot { bottom: 3px; }
+    .calendar-cell.today .event-dot { top: 7px; }
     .calendar-cell.selected .event-dot { background: white; }
 
     /* Delete button (edit mode) */
@@ -871,6 +871,7 @@ const ANNUAL_EVENTS = [
   { type: 'solar', month: 2, day: 24, title: '🎂 妈妈生日' },
   { type: 'solar', month: 3, day: 17, title: '🎂 王彦婷生日' },
   { type: 'solar', month: 5, day: 7, title: '💍 结婚纪念日' },
+  { type: 'solar', month: 5, day: 17, title: '🎂 星愿星辰生日' },
   { type: 'solar', month: 5, day: 19, title: '🎂 张嘉林生日' },
   { type: 'solar', month: 5, day: 27, title: '🎂 姨妈生日' },
   { type: 'solar', month: 6, day: 9, title: '🎂 占磊生日' },
