@@ -1424,9 +1424,25 @@ function bindEvents() {
 }
 
 // ===== SEED DATA =====
+function fixMay31Plan() {
+  const ds = '2026-05-31';
+  if (!hasCustomPlan(ds)) return;
+  const tasks = getTasksForDate(ds);
+  const champs = tasks.find(t => t.id === 2000);
+  if (champs && champs.period === 'evening') {
+    champs.period = 'morning';
+    // Move to front of array
+    const idx = tasks.indexOf(champs);
+    tasks.splice(idx, 1);
+    tasks.unshift(champs);
+    setTasksForDate(ds, tasks);
+    console.log('Fixed May 31 plan');
+  }
+}
+
 function seedMay31Tasks() {
   const ds = '2026-05-31';
-  if (hasCustomPlan(ds)) return; // already seeded
+  if (hasCustomPlan(ds)) { fixMay31Plan(); return; }
 
   const tasks = [
     // 0:00 是一天的开头，放在最前面
