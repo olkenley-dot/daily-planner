@@ -217,13 +217,16 @@
     .calendar-cell.has-plan::after {
       content: '';
       position: absolute;
-      bottom: 3px;
+      top: 6px;
       left: 50%;
       transform: translateX(-50%);
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
       background: var(--orange);
+    }
+    .calendar-cell.today.has-plan::after {
+      top: 7px;
     }
     .calendar-cell.selected.has-plan::after {
       background: white;
