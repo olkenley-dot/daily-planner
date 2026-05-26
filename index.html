@@ -381,6 +381,24 @@
       border-left: 4px solid var(--purple);
       background: #FAF5FF;
     }
+    .task-card.event-card {
+      border-left: 4px solid var(--orange);
+      background: linear-gradient(135deg, #FFF7ED, #FFFBEB);
+      cursor: default;
+    }
+    .calendar-cell .event-dot {
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--orange);
+      z-index: 1;
+    }
+    .calendar-cell.today .event-dot { bottom: 3px; }
+    .calendar-cell.selected .event-dot { background: white; }
 
     /* Delete button (edit mode) */
     .task-card .delete-btn {
@@ -843,6 +861,35 @@ const CAT_LABELS = {
   fun:      "娱乐",
 };
 
+// ===== ANNUAL EVENTS =====
+const ANNUAL_EVENTS = [
+  // Solar dates
+  { type: 'solar', month: 1, day: 2, title: '🎂 老贝生日' },
+  { type: 'solar', month: 1, day: 13, title: '🎂 申林生日' },
+  { type: 'solar', month: 1, day: 28, title: '💕 我和媳妇在一起纪念日' },
+  { type: 'solar', month: 2, day: 14, title: '💕 情人节' },
+  { type: 'solar', month: 2, day: 24, title: '🎂 妈妈生日' },
+  { type: 'solar', month: 3, day: 17, title: '🎂 王彦婷生日' },
+  { type: 'solar', month: 5, day: 7, title: '💍 结婚纪念日' },
+  { type: 'solar', month: 5, day: 19, title: '🎂 张嘉林生日' },
+  { type: 'solar', month: 5, day: 27, title: '🎂 姨妈生日' },
+  { type: 'solar', month: 6, day: 9, title: '🎂 占磊生日' },
+  { type: 'solar', month: 6, day: 13, title: '🎂 谭萌生日' },
+  { type: 'solar', month: 6, day: 28, title: '🎂 花卷生日' },
+  { type: 'solar', month: 8, day: 6, title: '🎂 吴琼生日' },
+  { type: 'solar', month: 8, day: 11, title: '🎂 吴思卿生日' },
+  { type: 'solar', month: 9, day: 3, title: '🎂 尹妮生日' },
+  { type: 'solar', month: 9, day: 9, title: '🎂 郑亦飞生日' },
+  { type: 'solar', month: 9, day: 10, title: '🎂 马星驰生日' },
+  { type: 'solar', month: 9, day: 21, title: '🎂 孔德铭生日' },
+  { type: 'solar', month: 12, day: 9, title: '🎂 乐乐生日' },
+  { type: 'solar', month: 12, day: 27, title: '🎂 开心生日' },
+  // Lunar dates
+  { type: 'lunar', lMonth: 10, lDay: 2, title: '🎂 爸爸生日' },
+  { type: 'lunar', lMonth: 10, lDay: 3, title: '🎂 赵路生日' },
+  { type: 'lunar', lMonth: 1, lDay: 3, title: '🎂 媳妇生日' },
+];
+
 const GREETINGS = [
   { h: 5,  msg: "清晨好", sub: "新的一天开始了 ☀️" },
   { h: 6,  msg: "早上好", sub: "该起床遛狗了 🐕" },
@@ -924,6 +971,32 @@ function solar2lunar(year, month, day) {
     dayName: LUNAR_DAY[lDay - 1] || lDay + '日',
     day: lDay,
   };
+}
+
+function lunar2solar(year, lMonth, lDay) {
+  let offset = 0;
+  for (let y = 1900; y < year; y++) offset += _lunarYearDays(y);
+  const leap = _leapMonth(year);
+  for (let m = 1; m < lMonth; m++) {
+    offset += _monthDays(year, m);
+    if (leap === m) offset += _leapDays(year);
+  }
+  offset += lDay - 1;
+  const d = new Date(Date.UTC(1900, 0, 31) + offset * 86400000);
+  return { month: d.getUTCMonth() + 1, day: d.getUTCDate() };
+}
+
+function getEventsForDate(year, month, day) {
+  const result = [];
+  for (const ev of ANNUAL_EVENTS) {
+    if (ev.type === 'solar') {
+      if (ev.month === month && ev.day === day) result.push(ev);
+    } else {
+      const s = lunar2solar(year, ev.lMonth, ev.lDay);
+      if (s.month === month && s.day === day) result.push(ev);
+    }
+  }
+  return result;
 }
 
 // ===== STATE =====
@@ -1207,10 +1280,13 @@ function renderCalendar() {
     if (isToday) cls += ' today';
     if (isSelected) cls += ' selected';
     if (hasPlan) cls += ' has-plan';
+    const hasEvent = getEventsForDate(y, m + 1, d).length > 0;
+    if (hasEvent) cls += ' has-event';
 
     const lunar2 = solar2lunar(y, m + 1, d);
     const lunarDayHtml = lunar2 ? `<span class="lunar-day">${lunar2.dayName}</span>` : '';
-    html += `<div class="${cls}" data-date="${ds}"><span class="solar-day">${d}</span>${lunarDayHtml}</div>`;
+    const eventDot = hasEvent ? '<span class="event-dot"></span>' : '';
+    html += `<div class="${cls}" data-date="${ds}"><span class="solar-day">${d}</span>${lunarDayHtml}${eventDot}</div>`;
   }
 
   // Next month leading days
@@ -1282,6 +1358,26 @@ function renderTasks() {
   const doneIds = getDayCompletions(ds);
 
   container.innerHTML = '';
+
+  // Annual events for this date
+  const events = getEventsForDate(currentViewDate.getFullYear(), currentViewDate.getMonth() + 1, currentViewDate.getDate());
+  if (events.length > 0) {
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'padding: 0 16px; margin-bottom: 12px;';
+    events.forEach(ev => {
+      const card = document.createElement('div');
+      card.className = 'task-card event-card';
+      card.innerHTML = `
+        <div style="font-size:20px;width:28px;text-align:center;flex-shrink:0;">📌</div>
+        <div class="task-info">
+          <div class="task-title" style="color:var(--orange-dark);">${ev.title}</div>
+          <div class="task-time">每年 · 循环事项</div>
+        </div>
+      `;
+      wrapper.appendChild(card);
+    });
+    container.appendChild(wrapper);
+  }
 
   // Done state
   if (doneIds.length >= tasks.length && tasks.length > 0) {
