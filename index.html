@@ -437,6 +437,7 @@
     .badge-fitness { background: #D1FAE5; color: #065F46; }
     .badge-work    { background: #DBEAFE; color: #1E40AF; }
     .badge-learning{ background: #EDE9FE; color: #5B21B6; }
+    .badge-fun     { background: #FCE7F3; color: #9D174D; }
 
     /* Custom task highlight tag */
     .custom-tag {
@@ -777,6 +778,7 @@
         <option value="fitness">锻炼</option>
         <option value="work">工作</option>
         <option value="learning">学习</option>
+        <option value="fun">娱乐</option>
       </select>
     </div>
     <div class="modal-actions">
@@ -820,6 +822,7 @@ const CAT_LABELS = {
   fitness:  "锻炼",
   work:     "工作",
   learning: "学习",
+  fun:      "娱乐",
 };
 
 const GREETINGS = [
@@ -1420,10 +1423,38 @@ function bindEvents() {
   });
 }
 
+// ===== SEED DATA =====
+function seedMay31Tasks() {
+  const ds = '2026-05-31';
+  if (hasCustomPlan(ds)) return; // already seeded
+
+  const tasks = [
+    ...BASE_TASKS,
+    {
+      id: 2000,
+      time: "0:00",
+      title: "观看欧冠决赛 ⚽",
+      period: "evening",
+      cat: "fun",
+      isCustom: true,
+    },
+    {
+      id: 2001,
+      time: "16:00",
+      title: "看脱口秀（张嘉林和谭萌，南大街中大国际5F A513）",
+      period: "afternoon",
+      cat: "fun",
+      isCustom: true,
+    },
+  ];
+  setTasksForDate(ds, tasks);
+}
+
 // ===== INIT =====
 function init() {
   loadCompletions();
   loadDayPlans();
+  seedMay31Tasks();
   bindEvents();
   render();
 
