@@ -18,13 +18,17 @@
       --blue-light: #3B82F6;
       --green: #10B981;
       --green-light: #D1FAE5;
+      --red: #EF4444;
+      --purple: #8B5CF6;
       --bg: #FDF6EC;
       --card-bg: #FFFFFF;
       --text: #1F2937;
       --text-light: #6B7280;
+      --text-muted: #9CA3AF;
       --border: #F3E8D3;
       --shadow: 0 2px 12px rgba(0,0,0,0.06);
       --radius: 16px;
+      --radius-sm: 10px;
     }
 
     body {
@@ -40,7 +44,7 @@
     header {
       background: linear-gradient(135deg, var(--orange), var(--orange-dark));
       color: white;
-      padding: 48px 24px 32px;
+      padding: 48px 24px 20px;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -48,10 +52,10 @@
     header::after {
       content: '';
       position: absolute;
-      bottom: -30px;
+      bottom: -20px;
       left: -10%;
       right: -10%;
-      height: 60px;
+      height: 40px;
       background: var(--bg);
       border-radius: 50% 50% 0 0 / 100% 100% 0 0;
     }
@@ -68,13 +72,173 @@
       position: relative;
       z-index: 1;
     }
-    #date-display {
+    #view-date-display {
       font-size: 13px;
-      opacity: 0.7;
-      margin-top: 8px;
+      opacity: 0.75;
+      margin-top: 6px;
       position: relative;
       z-index: 1;
     }
+
+    /* ===== Date Navigation ===== */
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 16px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .date-nav .nav-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      flex-shrink: 0;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .date-nav .nav-btn:active { background: #F3F4F6; }
+    .date-nav select {
+      font-size: 15px;
+      font-weight: 600;
+      padding: 4px 6px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+      -webkit-appearance: auto;
+      appearance: auto;
+    }
+    .date-nav .nav-spacer { flex: 1; }
+    .date-nav .btn-today {
+      font-size: 13px;
+      padding: 6px 14px;
+      border: 1px solid var(--orange);
+      border-radius: 20px;
+      background: #FFFBEB;
+      color: var(--orange-dark);
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .date-nav .btn-today:active { background: #FEF3C7; }
+    .date-nav .btn-edit {
+      font-size: 13px;
+      padding: 6px 14px;
+      border: 1px solid var(--blue-light);
+      border-radius: 20px;
+      background: #EFF6FF;
+      color: var(--blue);
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .date-nav .btn-edit:active { background: #DBEAFE; }
+    .date-nav .btn-edit.active {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    /* ===== Calendar Section ===== */
+    .calendar-section {
+      background: white;
+      padding: 0 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .calendar-section.hidden { display: none; }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      margin: 0 auto;
+    }
+    .calendar-header-cell {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 6px 0;
+    }
+    .calendar-cell {
+      position: relative;
+      text-align: center;
+      font-size: 14px;
+      padding: 8px 0;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .calendar-cell:active { background: #F3F4F6; }
+    .calendar-cell.other-month { color: var(--text-muted); }
+    .calendar-cell.today {
+      font-weight: 700;
+      color: var(--orange-dark);
+    }
+    .calendar-cell.today::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border: 2px solid var(--orange-light);
+      border-radius: 50%;
+    }
+    .calendar-cell.selected {
+      background: var(--orange) !important;
+      color: white !important;
+      font-weight: 700;
+    }
+    .calendar-cell.selected::before { display: none; }
+    .calendar-cell.has-plan::after {
+      content: '';
+      position: absolute;
+      bottom: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+    .calendar-cell.selected.has-plan::after {
+      background: white;
+    }
+    .calendar-toggle {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 6px 0 2px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .calendar-toggle:active { color: var(--text-light); }
 
     /* ===== Progress Ring ===== */
     .progress-section {
@@ -127,26 +291,6 @@
       color: var(--text-light);
       margin-top: 2px;
     }
-    .ring-complete-dot {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 28px;
-      height: 28px;
-      background: var(--green);
-      border: 3px solid var(--bg);
-      border-radius: 50%;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 14px;
-      box-shadow: 0 2px 8px rgba(16,185,129,0.4);
-    }
-    .ring-complete-dot.show {
-      display: flex;
-      animation: pop 0.4s ease;
-    }
 
     /* ===== Day Streak ===== */
     .streak-bar {
@@ -192,10 +336,10 @@
     .task-card {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 16px 18px;
+      padding: 14px 16px;
       margin-bottom: 10px;
       box-shadow: var(--shadow);
       transition: transform 0.15s, box-shadow 0.15s;
@@ -215,6 +359,31 @@
     .task-card.completed {
       opacity: 0.75;
     }
+    .task-card.custom-task {
+      border-left: 4px solid var(--purple);
+      background: #FAF5FF;
+    }
+
+    /* Delete button (edit mode) */
+    .task-card .delete-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--red);
+      color: white;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .task-card .delete-btn:active { transform: scale(0.85); }
+    .editing .task-card .delete-btn { display: flex; }
+    .editing .task-card { cursor: default; }
 
     /* Checkbox */
     .check-box {
@@ -268,6 +437,167 @@
     .badge-fitness { background: #D1FAE5; color: #065F46; }
     .badge-work    { background: #DBEAFE; color: #1E40AF; }
     .badge-learning{ background: #EDE9FE; color: #5B21B6; }
+
+    /* Custom task highlight tag */
+    .custom-tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: var(--purple);
+      color: white;
+      font-weight: 700;
+      margin-left: 6px;
+      flex-shrink: 0;
+    }
+    .task-title .star-icon {
+      color: var(--orange);
+      margin-right: 2px;
+    }
+
+    /* ===== Add Task Button (edit mode) ===== */
+    .add-task-btn {
+      display: none;
+      width: 100%;
+      padding: 12px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background: transparent;
+      font-size: 14px;
+      color: var(--text-muted);
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .add-task-btn:active {
+      background: #F9FAFB;
+      border-color: var(--text-muted);
+    }
+    .editing .add-task-btn { display: block; }
+
+    /* ===== Edit Bar ===== */
+    .edit-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #EFF6FF;
+      border-top: 1px solid var(--blue-light);
+      border-bottom: 1px solid var(--blue-light);
+      font-size: 13px;
+      color: var(--blue);
+    }
+    .edit-bar.show { display: flex; flex-wrap: wrap; }
+    .edit-bar .edit-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      flex: 1;
+      text-align: center;
+      min-width: 100px;
+    }
+    .edit-bar button {
+      font-size: 13px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .edit-bar .btn-reset {
+      background: white;
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .edit-bar .btn-reset:active { background: #FEF2F2; }
+    .edit-bar .btn-done {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+    .edit-bar .btn-done:active { background: #1E40AF; }
+
+    /* ===== Add Task Modal ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .modal-content h3 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      background: white;
+      color: var(--text);
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--blue-light);
+    }
+    .form-select { -webkit-appearance: auto; appearance: auto; }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      border: 1px solid;
+      cursor: pointer;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .modal-actions .btn-cancel {
+      background: white;
+      border-color: var(--border);
+      color: var(--text-light);
+    }
+    .modal-actions .btn-cancel:active { background: #F9FAFB; }
+    .modal-actions .btn-confirm {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: white;
+    }
+    .modal-actions .btn-confirm:active { background: var(--orange-dark); }
 
     /* Completion celebration animation */
     @keyframes pop {
@@ -335,7 +665,7 @@
       background: #D1D5DB;
     }
 
-    /* ===== Task Progress Toast ===== */
+    /* ===== Toast ===== */
     .toast {
       position: fixed;
       bottom: 80px;
@@ -360,18 +690,12 @@
 
     /* ===== Responsive ===== */
     @media (min-width: 480px) {
-      .task-list {
+      .calendar-grid { max-width: 420px; }
+      .task-list, .section-divider,
+      .progress-section, .streak-bar {
         max-width: 440px;
-        margin: 0 auto;
-      }
-      .section-divider {
-        max-width: 440px;
-        margin: 0 auto;
-      }
-      .progress-section,
-      .streak-bar {
-        max-width: 440px;
-        margin: 0 auto;
+        margin-left: auto;
+        margin-right: auto;
       }
     }
   </style>
@@ -381,9 +705,28 @@
 <header>
   <div id="greeting">早安 Olkenley</div>
   <div id="sub-greeting">今天也要加油 💪</div>
-  <div id="date-display"></div>
+  <div id="view-date-display"></div>
 </header>
 
+<!-- ===== Date Navigation ===== -->
+<div class="date-nav" id="date-nav">
+  <button class="nav-btn" id="prev-month">◀</button>
+  <select id="year-select"></select>
+  <span style="font-size:13px;color:var(--text-muted)">年</span>
+  <select id="month-select"></select>
+  <button class="nav-btn" id="next-month">▶</button>
+  <span class="nav-spacer"></span>
+  <button class="btn-today" id="btn-today">今天</button>
+  <button class="btn-edit" id="btn-edit">✏️编辑</button>
+</div>
+
+<!-- ===== Calendar ===== -->
+<div class="calendar-section" id="calendar-section">
+  <div class="calendar-grid" id="calendar-grid"></div>
+  <button class="calendar-toggle" id="calendar-toggle">📅 收起日历</button>
+</div>
+
+<!-- ===== Progress ===== -->
 <div class="progress-section">
   <div class="ring-container">
     <svg viewBox="0 0 120 120">
@@ -405,7 +748,43 @@
   连续坚持 <span class="num" id="streak-count">0</span> 天
 </div>
 
+<!-- ===== Task Sections ===== -->
 <div id="task-sections"></div>
+
+<!-- ===== Edit Bar ===== -->
+<div class="edit-bar" id="edit-bar">
+  <button class="btn-reset" id="btn-reset">↺ 恢复默认</button>
+  <span class="edit-hint">点击 ✕ 删除，底部 + 添加</span>
+  <button class="btn-done" id="btn-done">完成编辑</button>
+</div>
+
+<!-- ===== Add Task Modal ===== -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-content">
+    <h3>➕ 添加任务</h3>
+    <div class="form-group">
+      <label>时间</label>
+      <input class="form-input" id="add-time" placeholder="例如 14:30" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>任务内容</label>
+      <input class="form-input" id="add-title" placeholder="例如 去看牙医" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>分类</label>
+      <select class="form-select" id="add-cat">
+        <option value="routine">日常</option>
+        <option value="fitness">锻炼</option>
+        <option value="work">工作</option>
+        <option value="learning">学习</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-add-cancel">取消</button>
+      <button class="btn-confirm" id="btn-add-confirm">确定</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -418,8 +797,8 @@
 </footer>
 
 <script>
-// ===== DATA =====
-const TASKS = [
+// ===== CONSTANTS =====
+const BASE_TASKS = [
   { id: 1,  time: "6:00",  title: "起床遛狗（听播客）",    period: "morning",    cat: "routine" },
   { id: 2,  time: "7:30",  title: "腿部力量训练",          period: "morning",    cat: "fitness" },
   { id: 3,  time: "9:00",  title: "夏令营课程设计",        period: "morning",    cat: "work" },
@@ -454,17 +833,36 @@ const GREETINGS = [
   { h: 23, msg: "夜深了", sub: "该准备睡觉了 😴" },
 ];
 
-const CIRCUMFERENCE = 2 * Math.PI * 52; // ~326.73
+const CIRCUMFERENCE = 2 * Math.PI * 52;
+const WEEKDAYS = ['日','一','二','三','四','五','六'];
 
 // ===== STATE =====
-let completions = {};  // { "2026-05-26": [1,3,5] }
+let completions = {};     // { "2026-05-26": [1,3,5] }
+let dayPlans = {};        // { "2026-05-26": [...tasks...] }
+let currentViewDate = new Date();
+let isEditing = false;
+let calendarVisible = true;
 
+// ===== DATE HELPERS =====
+function pad2(n) { return String(n).padStart(2, '0'); }
 function getDateStr(d) {
-  const pad = n => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 }
 function todayStr() { return getDateStr(new Date()); }
+function viewDateStr() { return getDateStr(currentViewDate); }
+function sameDay(a, b) {
+  return a.getFullYear() === b.getFullYear()
+    && a.getMonth() === b.getMonth()
+    && a.getDate() === b.getDate();
+}
+function monthDays(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
+function monthStartDay(year, month) {
+  return new Date(year, month, 1).getDay();
+}
 
+// ===== DATA LAYER =====
 function loadCompletions() {
   try {
     const raw = localStorage.getItem('olkenley_tasks');
@@ -474,12 +872,36 @@ function loadCompletions() {
 function saveCompletions() {
   localStorage.setItem('olkenley_tasks', JSON.stringify(completions));
 }
-function getTodayCompletions() {
-  return completions[todayStr()] || [];
+function getDayCompletions(dateStr) {
+  return completions[dateStr] || [];
 }
-function setTodayCompletions(ids) {
-  completions[todayStr()] = ids;
+function setDayCompletions(dateStr, ids) {
+  completions[dateStr] = ids;
   saveCompletions();
+}
+
+function loadDayPlans() {
+  try {
+    const raw = localStorage.getItem('olkenley_plans');
+    dayPlans = raw ? JSON.parse(raw) : {};
+  } catch(e) { dayPlans = {}; }
+}
+function saveDayPlans() {
+  localStorage.setItem('olkenley_plans', JSON.stringify(dayPlans));
+}
+function getTasksForDate(dateStr) {
+  return dayPlans[dateStr] || BASE_TASKS;
+}
+function setTasksForDate(dateStr, tasks) {
+  dayPlans[dateStr] = tasks;
+  saveDayPlans();
+}
+function removeDayPlan(dateStr) {
+  delete dayPlans[dateStr];
+  saveDayPlans();
+}
+function hasCustomPlan(dateStr) {
+  return dateStr in dayPlans;
 }
 
 // ===== STREAK =====
@@ -500,17 +922,233 @@ function calcStreak() {
   return count;
 }
 
+// ===== NAVIGATION =====
+function navigateToDate(d) {
+  currentViewDate = d;
+  if (isEditing) exitEditMode();
+  render();
+}
+
+function goPrevMonth() {
+  currentViewDate.setMonth(currentViewDate.getMonth() - 1);
+  navigateToDate(new Date(currentViewDate));
+}
+
+function goNextMonth() {
+  currentViewDate.setMonth(currentViewDate.getMonth() + 1);
+  navigateToDate(new Date(currentViewDate));
+}
+
+function goToday() {
+  navigateToDate(new Date());
+}
+
+// ===== EDIT MODE =====
+function enterEditMode() {
+  isEditing = true;
+  document.getElementById('btn-edit').classList.add('active');
+  document.getElementById('btn-edit').textContent = '✏️ 编辑中';
+  document.getElementById('edit-bar').classList.add('show');
+  document.body.classList.add('editing');
+}
+function exitEditMode() {
+  isEditing = false;
+  document.getElementById('btn-edit').classList.remove('active');
+  document.getElementById('btn-edit').textContent = '✏️编辑';
+  document.getElementById('edit-bar').classList.remove('show');
+  document.body.classList.remove('editing');
+}
+
+function resetDayPlan() {
+  const ds = viewDateStr();
+  if (!hasCustomPlan(ds)) return;
+  removeDayPlan(ds);
+  exitEditMode();
+  showToast('已恢复默认计划');
+  render();
+}
+
+// ===== ADD TASK =====
+function openAddTaskModal() {
+  document.getElementById('add-time').value = '';
+  document.getElementById('add-title').value = '';
+  document.getElementById('add-cat').value = 'routine';
+  document.getElementById('modal-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('add-time').focus(), 100);
+}
+function closeAddTaskModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+function confirmAddTask() {
+  const time = document.getElementById('add-time').value.trim();
+  const title = document.getElementById('add-title').value.trim();
+  const cat = document.getElementById('add-cat').value;
+  if (!time) { showToast('请填写时间'); return; }
+  if (!title) { showToast('请填写任务内容'); return; }
+
+  const ds = viewDateStr();
+  const tasks = getTasksForDate(ds);
+
+  let _nextId = 1000;
+  const usedIds = new Set(tasks.map(t => t.id));
+  while (usedIds.has(_nextId)) _nextId++;
+
+  // Detect period from time
+  const h = parseInt(time.split(':')[0], 10);
+  let period = 'afternoon';
+  if (h < 12) period = 'morning';
+  else if (h >= 18) period = 'evening';
+
+  const newTask = {
+    id: _nextId,
+    time: time,
+    title: title,
+    period: period,
+    cat: cat,
+    isCustom: true,
+  };
+
+  // If this date doesn't have a custom plan yet, snapshot the base tasks first
+  let newTasks;
+  if (hasCustomPlan(ds)) {
+    newTasks = [...tasks, newTask];
+  } else {
+    newTasks = [...BASE_TASKS, newTask];
+  }
+
+  setTasksForDate(ds, newTasks);
+  closeAddTaskModal();
+  showToast(`已添加：${title}`);
+  render();
+}
+
+function deleteTask(id) {
+  const ds = viewDateStr();
+  const tasks = getTasksForDate(ds);
+  const newTasks = tasks.filter(t => t.id !== id);
+  if (newTasks.length === 0) return;
+  setTasksForDate(ds, newTasks);
+
+  // Also remove deleted task from completions for this date
+  const done = getDayCompletions(ds);
+  const idx = done.indexOf(id);
+  if (idx > -1) {
+    done.splice(idx, 1);
+    setDayCompletions(ds, done);
+  }
+
+  render();
+}
+
 // ===== RENDER =====
 function render() {
-  const today = new Date();
-  const todayId = todayStr();
-  const doneIds = getTodayCompletions();
-  const total = TASKS.length;
-  const done = doneIds.length;
-  const pct = total > 0 ? done / total : 0;
+  renderDateNav();
+  renderCalendar();
+  renderHeader();
+  renderProgress();
+  renderTasks();
+  renderFooter();
+}
 
-  // Greeting
-  const h = today.getHours();
+function renderDateNav() {
+  const y = currentViewDate.getFullYear();
+  const m = currentViewDate.getMonth();
+
+  // Year select
+  const yearSel = document.getElementById('year-select');
+  const currentYear = new Date().getFullYear();
+  let yearHtml = '';
+  for (let yr = currentYear - 5; yr <= currentYear + 2; yr++) {
+    yearHtml += `<option value="${yr}"${yr===y?' selected':''}>${yr}</option>`;
+  }
+  yearSel.innerHTML = yearHtml;
+
+  // Month select
+  const monthSel = document.getElementById('month-select');
+  const monthNames = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  let monthHtml = '';
+  monthNames.forEach((name, i) => {
+    monthHtml += `<option value="${i}"${i===m?' selected':''}>${name}</option>`;
+  });
+  monthSel.innerHTML = monthHtml;
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calendar-grid');
+  const sec = document.getElementById('calendar-section');
+  sec.classList.toggle('hidden', !calendarVisible);
+
+  const y = currentViewDate.getFullYear();
+  const m = currentViewDate.getMonth();
+  const today = new Date();
+  const todayStr_ = todayStr();
+  const viewStr = viewDateStr();
+
+  const daysInMonth = monthDays(y, m);
+  const startDay = monthStartDay(y, m);
+
+  // Prev month days to fill
+  const prevMonth = m === 0 ? 11 : m - 1;
+  const prevYear = m === 0 ? y - 1 : y;
+  const daysInPrev = monthDays(prevYear, prevMonth);
+
+  let html = '';
+  // Header row
+  for (const wd of WEEKDAYS) {
+    html += `<div class="calendar-header-cell">${wd}</div>`;
+  }
+
+  // Previous month's trailing days
+  for (let i = startDay - 1; i >= 0; i--) {
+    const day = daysInPrev - i;
+    html += `<div class="calendar-cell other-month">${day}</div>`;
+  }
+
+  // Current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateObj = new Date(y, m, d);
+    const ds = getDateStr(dateObj);
+    const isToday = ds === todayStr_;
+    const isSelected = ds === viewStr;
+    const hasPlan = hasCustomPlan(ds);
+
+    let cls = 'calendar-cell';
+    if (isToday) cls += ' today';
+    if (isSelected) cls += ' selected';
+    if (hasPlan) cls += ' has-plan';
+
+    html += `<div class="${cls}" data-date="${ds}">${d}</div>`;
+  }
+
+  // Next month leading days
+  const totalCells = startDay + daysInMonth;
+  const remaining = (7 - totalCells % 7) % 7;
+  for (let d = 1; d <= remaining; d++) {
+    html += `<div class="calendar-cell other-month">${d}</div>`;
+  }
+
+  grid.innerHTML = html;
+
+  // Click handlers on cells
+  grid.querySelectorAll('.calendar-cell:not(.other-month)').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const ds = cell.dataset.date;
+      if (!ds) return;
+      const parts = ds.split('-').map(Number);
+      navigateToDate(new Date(parts[0], parts[1] - 1, parts[2]));
+    });
+  });
+
+  // Toggle button text
+  document.getElementById('calendar-toggle').textContent =
+    calendarVisible ? '📅 收起日历' : '📅 展开日历';
+}
+
+function renderHeader() {
+  const now = new Date();
+  const h = now.getHours();
+
   let greeting = GREETINGS[0];
   for (const g of GREETINGS) {
     if (h >= g.h) greeting = g;
@@ -518,38 +1156,41 @@ function render() {
   document.getElementById('greeting').textContent = `${greeting.msg} Olkenley`;
   document.getElementById('sub-greeting').textContent = greeting.sub;
 
-  // Date
-  const weekdays = ['日','一','二','三','四','五','六'];
-  document.getElementById('date-display').textContent =
-    `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日 周${weekdays[today.getDay()]}`;
-
-  // Progress ring
-  const ring = document.getElementById('progress-ring');
-  const offset = CIRCUMFERENCE * (1 - pct);
-  ring.style.strokeDashoffset = offset;
-  document.getElementById('progress-count').textContent = done;
-
-  // Completion dot
-  const dot = document.querySelector('.ring-complete-dot');
-  if (done >= total && dot) dot.classList.add('show');
-  else if (dot) dot.classList.remove('show');
-
-  // Streak
-  document.getElementById('streak-count').textContent = calcStreak();
-
-  // Task sections
-  renderTasks(doneIds);
-
-  // Footer
-  renderFooterTime(h);
+  // Date display for the VIEWED date
+  const d = currentViewDate;
+  const ds = viewDateStr();
+  const isToday = ds === todayStr();
+  const weekday = WEEKDAYS[d.getDay()];
+  const dateText = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 周${weekday}`;
+  document.getElementById('view-date-display').textContent =
+    isToday ? `📌 今天 · ${dateText}` : dateText;
 }
 
-function renderTasks(doneIds) {
+function renderProgress() {
+  const ds = viewDateStr();
+  const tasks = getTasksForDate(ds);
+  const doneIds = getDayCompletions(ds);
+  const total = tasks.length;
+  const done = doneIds.length;
+  const pct = total > 0 ? done / total : 0;
+
+  const ring = document.getElementById('progress-ring');
+  ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
+  document.getElementById('progress-count').textContent = `${done}/${total}`;
+
+  document.getElementById('streak-count').textContent = calcStreak();
+}
+
+function renderTasks() {
   const container = document.getElementById('task-sections');
+  const ds = viewDateStr();
+  const tasks = getTasksForDate(ds);
+  const doneIds = getDayCompletions(ds);
+
   container.innerHTML = '';
 
-  // "已完成全部" emoji if all done
-  if (doneIds.length >= TASKS.length) {
+  // Done state
+  if (doneIds.length >= tasks.length && tasks.length > 0) {
     const div = document.createElement('div');
     div.className = 'empty-state';
     div.innerHTML = `
@@ -561,11 +1202,8 @@ function renderTasks(doneIds) {
   }
 
   PERIODS.forEach(p => {
-    const tasks = TASKS.filter(t => t.period === p.key);
-    if (tasks.length === 0) return;
-
-    // Only show section if not all completed
-    const allDone = tasks.every(t => doneIds.includes(t.id));
+    const periodTasks = tasks.filter(t => t.period === p.key);
+    if (periodTasks.length === 0) return;
 
     // Divider
     const divider = document.createElement('div');
@@ -573,45 +1211,85 @@ function renderTasks(doneIds) {
     divider.textContent = p.label;
     container.appendChild(divider);
 
-    // Cards
     const list = document.createElement('div');
     list.className = 'task-list';
 
-    tasks.forEach(t => {
+    periodTasks.forEach(t => {
       const isDone = doneIds.includes(t.id);
       const isNow = isCurrentTask(t);
+      const isCustom = t.isCustom === true;
 
       const card = document.createElement('div');
-      card.className = `task-card${isDone ? ' completed' : ''}${isNow ? ' active-now' : ''}`;
+      let cls = `task-card${isDone ? ' completed' : ''}${isNow ? ' active-now' : ''}`;
+      if (isCustom) cls += ' custom-task';
+      card.className = cls;
       card.dataset.id = t.id;
 
+      const titleHtml = isCustom
+        ? `<span class="star-icon">⭐</span>${t.title}`
+        : t.title;
+
       card.innerHTML = `
+        <button class="delete-btn" data-id="${t.id}">✕</button>
         <div class="check-box">${isDone ? '✓' : ''}</div>
         <div class="task-info">
-          <div class="task-title">${t.title}</div>
+          <div class="task-title">${titleHtml}</div>
           <div class="task-time">${t.time}</div>
         </div>
+        ${isCustom ? '<span class="custom-tag">新增</span>' : ''}
         <span class="task-badge badge-${t.cat}">${CAT_LABELS[t.cat]}</span>
       `;
 
+      // Toggle completion
       card.addEventListener('click', (e) => {
-        e.stopPropagation();
+        if (isEditing) return; // don't toggle in edit mode
+        if (e.target.closest('.delete-btn')) return;
         toggleTask(t.id);
+      });
+
+      // Delete button
+      const delBtn = card.querySelector('.delete-btn');
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteTask(t.id);
       });
 
       list.appendChild(card);
     });
 
+    // Add task button
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-task-btn';
+    addBtn.textContent = '+ 添加任务';
+    addBtn.dataset.period = p.key;
+    addBtn.addEventListener('click', () => {
+      if (!isEditing) return;
+      openAddTaskModal();
+    });
+    list.appendChild(addBtn);
+
     container.appendChild(list);
   });
+
+  // If no tasks at all
+  if (tasks.length === 0) {
+    const div = document.createElement('div');
+    div.className = 'empty-state';
+    div.innerHTML = `
+      <div class="emoji">📋</div>
+      <div style="font-size:16px;font-weight:600;color:var(--text-light);">这一天还没有计划</div>
+      ${isEditing ? '<div style="font-size:14px;margin-top:8px;">点击底部 "+ 添加任务" 创建计划</div>' : ''}
+    `;
+    container.appendChild(div);
+  }
 }
 
 function isCurrentTask(task) {
+  if (viewDateStr() !== todayStr()) return false;
   const now = new Date();
   const h = now.getHours();
   const m = now.getMinutes();
 
-  // Parse task time
   const parts = task.time.split(':');
   const th = parseInt(parts[0], 10);
   const tm = parseInt(parts[1] || '0', 10);
@@ -620,12 +1298,13 @@ function isCurrentTask(task) {
   const taskMinutes = th * 60 + tm;
   const diff = currentMinutes - taskMinutes;
 
-  // Show as "active" if within 90 min window after task start
-  // and not yet completed
-  return diff >= 0 && diff <= 90 && !getTodayCompletions().includes(task.id);
+  return diff >= 0 && diff <= 90 && !getDayCompletions(todayStr()).includes(task.id);
 }
 
-function renderFooterTime(h) {
+function renderFooter() {
+  const now = new Date();
+  const h = now.getHours();
+
   const dot = document.getElementById('status-dot');
   const text = document.getElementById('status-text');
 
@@ -647,12 +1326,13 @@ function renderFooterTime(h) {
   }
 
   document.getElementById('footer-time').textContent =
-    `${String(h).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`;
+    `${String(h).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 }
 
 // ===== TOGGLE TASK =====
 function toggleTask(id) {
-  let doneIds = getTodayCompletions();
+  const ds = viewDateStr();
+  let doneIds = getDayCompletions(ds);
   const idx = doneIds.indexOf(id);
 
   if (idx > -1) {
@@ -660,10 +1340,11 @@ function toggleTask(id) {
   } else {
     doneIds.push(id);
     spawnCelebration();
-    showToast(getMotivation(doneIds.length + 1, TASKS.length));
+    const tasks = getTasksForDate(ds);
+    showToast(getMotivation(doneIds.length, tasks.length));
   }
 
-  setTodayCompletions(doneIds);
+  setDayCompletions(ds, doneIds);
   render();
 }
 
@@ -690,31 +1371,63 @@ function showToast(msg) {
 }
 
 function getMotivation(done, total) {
-  const msgs = [
-    '好的开始是成功的一半 🚀',
-    '又完成一项，继续保持 👏',
-    '进度不错，加油 💪',
-    '你已经完成一半了！🎯',
-    '太棒了，超过一半了！🌟',
-    '马上全部完成了！🔥',
-    '差一点就圆满了！✨',
-  ];
+  if (done === 1) return '好的开始是成功的一半 🚀';
   const ratio = done / total;
-  if (done === 1) return msgs[0];
-  if (ratio <= 0.3) return msgs[1];
-  if (ratio <= 0.5) return msgs[2];
-  if (ratio === 0.5) return msgs[3];
-  if (ratio <= 0.75) return msgs[4];
-  if (ratio < 1) return msgs[5];
+  if (ratio <= 0.3) return '又完成一项，继续保持 👏';
+  if (ratio <= 0.5) return '进度不错，加油 💪';
+  if (ratio === 0.5) return '你已经完成一半了！🎯';
+  if (ratio <= 0.75) return '太棒了，超过一半了！🌟';
+  if (ratio < 1) return '马上全部完成了！🔥';
   return '🎉 全部完成！今天太棒了！';
+}
+
+// ===== EVENT BINDING =====
+function bindEvents() {
+  document.getElementById('prev-month').addEventListener('click', goPrevMonth);
+  document.getElementById('next-month').addEventListener('click', goNextMonth);
+  document.getElementById('btn-today').addEventListener('click', goToday);
+  document.getElementById('btn-edit').addEventListener('click', () => {
+    isEditing ? exitEditMode() : enterEditMode();
+  });
+  document.getElementById('btn-done').addEventListener('click', exitEditMode);
+  document.getElementById('btn-reset').addEventListener('click', resetDayPlan);
+  document.getElementById('calendar-toggle').addEventListener('click', () => {
+    calendarVisible = !calendarVisible;
+    renderCalendar();
+  });
+
+  // Year/month select change
+  document.getElementById('year-select').addEventListener('change', (e) => {
+    const m = currentViewDate.getMonth();
+    currentViewDate = new Date(parseInt(e.target.value), m, 1);
+    navigateToDate(currentViewDate);
+  });
+  document.getElementById('month-select').addEventListener('change', (e) => {
+    const y = currentViewDate.getFullYear();
+    currentViewDate = new Date(y, parseInt(e.target.value), 1);
+    navigateToDate(currentViewDate);
+  });
+
+  // Modal
+  document.getElementById('btn-add-cancel').addEventListener('click', closeAddTaskModal);
+  document.getElementById('btn-add-confirm').addEventListener('click', confirmAddTask);
+  document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeAddTaskModal();
+  });
+  // Enter key in modal
+  document.getElementById('add-title').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') confirmAddTask();
+  });
 }
 
 // ===== INIT =====
 function init() {
   loadCompletions();
+  loadDayPlans();
+  bindEvents();
   render();
 
-  // Clean up old data (keep only last 90 days)
+  // Clean up old completion data (keep last 90 days)
   const keys = Object.keys(completions);
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 90);
@@ -729,9 +1442,7 @@ function init() {
   if (changed) saveCompletions();
 
   // Auto-refresh every minute
-  setInterval(() => {
-    render();
-  }, 60000);
+  setInterval(() => { render(); }, 60000);
 }
 
 document.addEventListener('DOMContentLoaded', init);
